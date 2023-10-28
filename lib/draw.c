@@ -49,6 +49,23 @@ void draw_gameover(int WIDTH, int HEIGHT)
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 };
 
+void draw_life(int _life)
+{
+    SDL_Color color = {255, 255, 255};
+    char life[1000];
+    sprintf(life, "LIFE:%d", _life);
+    surface = TTF_RenderText_Solid(font,
+                                   life, color);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+    SDL_Rect score_dstrect = {10, 30, texW, texH};
+
+    SDL_RenderCopy(renderer, texture, NULL, &score_dstrect);
+};
+
 void draw_score(int _score)
 {
     SDL_Color color = {255, 255, 255};

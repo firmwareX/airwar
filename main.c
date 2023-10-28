@@ -28,6 +28,7 @@ void init_player()
 {
     player = Sprite_New(WIDTH / 2 - 20 / 2, HEIGHT - 20 - 10, 20, 20, "X", WIDTH, HEIGHT);
     player.speed = 2;
+    player.life = 3;
     player.can_out_screen = 0;
 }
 
@@ -119,7 +120,12 @@ void update()
         {
             if (collision_detection(enemys[i], player))
             {
-                status.over = 1;
+                player.life -= enemys[i].attack;
+                if(player.life < 1){
+                    status.over = 1;
+                }else{
+                    enemys[i].life -= 1;
+                }
             }
         }
     }
@@ -163,6 +169,7 @@ void draw()
         }
     }
     draw_score(player.score);
+    draw_life(player.life);
     if (status.over)
     {
         draw_gameover(WIDTH, HEIGHT);
@@ -205,7 +212,7 @@ int main(int argc, char *argv[])
     }
 
     // creates a window
-    window = SDL_CreateWindow("demo",
+    window = SDL_CreateWindow("AirWar",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT,
                               SDL_WINDOW_SHOWN);
