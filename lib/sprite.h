@@ -12,7 +12,7 @@ typedef struct
     int attack; // 攻击力，对方 blood -= 己方的 attack
     int life;
     int blood;
-    int value; // 对方增加的分数
+    int value;
     int score;
     int tox;
     int toy;

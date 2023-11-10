@@ -4,6 +4,7 @@ void draw_paused();
 void draw_gameover();
 void draw_life();
 void draw_score();
+void draw_value();
 void draw_sprite();
 void draw_show();
 void draw_destroy();

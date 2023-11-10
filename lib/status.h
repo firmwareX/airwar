@@ -10,8 +10,10 @@ typedef struct
     int paused;
     int quit;
     int full_screen;
-    int make_bullet;
     int init;
+	int value;
+	int score;
+	int life;
 } Status;
 
 Status Status_New();

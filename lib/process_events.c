@@ -2,6 +2,14 @@
 #include "status.h"
 #include "sprite.h"
 
+void update_value(Status *status,int n){
+	if(status->value!=-1){
+		status->value*=10;
+		status->value+=n;
+	}else{
+		status->value=n;
+	}
+}
 void ProcessEvents(Status *status, Sprite *player)
 {
     SDL_Event e;
@@ -26,29 +34,9 @@ void ProcessEvents(Status *status, Sprite *player)
                 return;
             }
 
-            if (e.key.keysym.sym == SDLK_a)
-            {
-                player->tox = -1;
-            }
-
-            if (e.key.keysym.sym == SDLK_d)
-            {
-                player->tox = 1;
-            }
-
-            if (e.key.keysym.sym == SDLK_w)
-            {
-                player->toy = -1;
-            }
-
-            if (e.key.keysym.sym == SDLK_s)
-            {
-                player->toy = 1;
-            }
-
             if (e.key.keysym.sym == SDLK_SPACE)
             {
-            }
+            }	
         }
 
         if (e.type == SDL_KEYUP)
@@ -72,29 +60,50 @@ void ProcessEvents(Status *status, Sprite *player)
                 status->paused = !status->paused;
             }
 
-            if (e.key.keysym.sym == SDLK_a)
-            {
-                player->tox = 0;
-            }
 
-            if (e.key.keysym.sym == SDLK_d)
+            if (e.key.keysym.sym == SDLK_1)
             {
-                player->tox = 0;
+				update_value(status,1);
             }
-
-            if (e.key.keysym.sym == SDLK_w)
+			if (e.key.keysym.sym == SDLK_2)
             {
-                player->toy = 0;
+				update_value(status,2);
             }
-
-            if (e.key.keysym.sym == SDLK_s)
+			if (e.key.keysym.sym == SDLK_3)
             {
-                player->toy = 0;
+				update_value(status,3);
             }
-
-            if (e.key.keysym.sym == SDLK_SPACE)
+			if (e.key.keysym.sym == SDLK_4)
             {
-                status->make_bullet = 1;
+				update_value(status,4);
+            }
+			if (e.key.keysym.sym == SDLK_5)
+            {
+				update_value(status,5);
+            }
+			if (e.key.keysym.sym == SDLK_6)
+            {
+				update_value(status,6);
+            }
+			if (e.key.keysym.sym == SDLK_7)
+            {
+				update_value(status,7);
+            }
+			if (e.key.keysym.sym == SDLK_8)
+            {
+				update_value(status,8);
+            }
+			if (e.key.keysym.sym == SDLK_9)
+            {
+				update_value(status,9);
+            }
+			if (e.key.keysym.sym == SDLK_0)
+            {
+				update_value(status,0);
+            }
+			if (e.key.keysym.sym == SDLK_c)
+            {
+				status->value=-1;
             }
         }
     }

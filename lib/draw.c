@@ -49,6 +49,28 @@ void draw_gameover(int WIDTH, int HEIGHT)
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 };
 
+void draw_value(int _value)
+{
+    SDL_Color color = {255, 255, 255};
+    char value[1000];
+	if(_value==-1){
+		sprintf(value, "input:%s", "NULL");
+	}else{
+		sprintf(value, "input:%d", _value);
+	}
+    
+    surface = TTF_RenderText_Solid(font,
+                                   value, color);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+    SDL_Rect score_dstrect = {10, 50, texW, texH};
+
+    SDL_RenderCopy(renderer, texture, NULL, &score_dstrect);
+};
+
 void draw_life(int _life)
 {
     SDL_Color color = {255, 255, 255};
@@ -90,10 +112,11 @@ void draw_sprite(Sprite sprite)
     surface = TTF_RenderText_Solid(font,
                                    sprite.data, color);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
-    // int texW = 0;
-    // int texH = 0;
-    // SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-    SDL_Rect dstrect = {sprite.x, sprite.y, sprite.w, sprite.h};
+    int texW = 0;
+    int texH = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+    //SDL_Rect dstrect = {sprite.x, sprite.y, sprite.w, sprite.h};
+	SDL_Rect dstrect = {sprite.x, sprite.y, texW, texH};
     // SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 };

@@ -12,7 +12,9 @@ Status Status_New()
     status.quit = 0;
     status.full_screen = 0;
     status.time = 0;
-    status.make_bullet = 0;
     status.init = 0;
+	status.value = -1;
+	status.score = 0;
+	status.life=3;
     return status;
 }

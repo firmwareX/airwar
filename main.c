@@ -13,8 +13,8 @@
 
 #define BULLETSTOTAL 10
 #define ENEMYSTOTAL 10
-#define WIDTH 200
-#define HEIGHT 200
+#define WIDTH 500
+#define HEIGHT 500
 
 Status status;
 Sprite player;
@@ -23,14 +23,6 @@ Sprite bullets[BULLETSTOTAL];
 Sprite enemys[ENEMYSTOTAL];
 
 SDL_Window *window;
-
-void init_player()
-{
-    player = Sprite_New(WIDTH / 2 - 20 / 2, HEIGHT - 20 - 10, 20, 20, "X", WIDTH, HEIGHT);
-    player.speed = 2;
-    player.life = 3;
-    player.can_out_screen = 0;
-}
 
 void init_enemys()
 {
@@ -53,11 +45,12 @@ void init_bullets()
 
 void init()
 {
-    init_player();
-    init_bullets();
     init_enemys();
     status.over = 0;
     status.time = 0;
+	status.score = 0;
+	status.life=3;
+	srand(time(NULL));
 }
 
 void make_enemy()
@@ -66,29 +59,18 @@ void make_enemy()
     {
         if (enemys[i].life < 1)
         {
-            srand(time(NULL));
             int x = rand() % (WIDTH - enemys[i].w);
             enemys[i].x = x;
             enemys[i].y = -1 * enemys[i].h;
             enemys[i].life = 1;
             enemys[i].speed = 1;
             enemys[i].toy = 1;
-            break;
-        }
-    }
-}
-
-void make_bullet()
-{
-    for (size_t i = 0; i < BULLETSTOTAL; i++)
-    {
-        if (bullets[i].life < 1)
-        {
-            bullets[i].x = player.x + player.w / 2 - bullets[i].w / 2;
-            bullets[i].y = player.y;
-            bullets[i].life = 1;
-            bullets[i].speed = 4;
-            bullets[i].toy = -1;
+			int a=rand()%9;
+			int b=rand()%9;
+			enemys[i].value=a+b;
+			char *d = malloc(sizeof(d)*3+1);
+			sprintf(d, "%d+%d", a,b);
+			enemys[i].data=d;
             break;
         }
     }
@@ -96,64 +78,25 @@ void make_bullet()
 
 void update()
 {
-    update_sprite(&player);
-
-    for (size_t i = 0; i < BULLETSTOTAL; i++)
-    {
-        if (bullets[i].life > 0)
-        {
-            update_sprite(&bullets[i]);
-        }
-    }
 
     for (size_t i = 0; i < ENEMYSTOTAL; i++)
     {
         if (enemys[i].life > 0)
         {
             update_sprite(&enemys[i], HEIGHT);
+			if(enemys[i].value==status.value){
+				enemys[i].life-=1;
+				status.score+=1;
+				status.value=-1;
+			}
         }
     }
-
-    for (size_t i = 0; i < ENEMYSTOTAL; i++)
-    {
-        if (enemys[i].life > 0)
-        {
-            if (collision_detection(enemys[i], player))
-            {
-                player.life -= enemys[i].attack;
-                if(player.life < 1){
-                    status.over = 1;
-                }else{
-                    enemys[i].life -= 1;
-                }
-            }
-        }
-    }
-
-    for (size_t i = 0; i < ENEMYSTOTAL; i++)
-    {
-        if (enemys[i].life > 0)
-        {
-            for (size_t j = 0; j < BULLETSTOTAL; j++)
-            {
-                if (bullets[j].life > 0)
-                {
-                    if (collision_detection(enemys[i], bullets[j]))
-                    {
-                        enemys[i].life -= bullets[j].attack;
-                        bullets[j].life -= enemys[i].attack;
-                        player.score += enemys[i].value;
-                    }
-                }
-            }
-        }
-    }
+	
 }
 
 void draw()
 {
     draw_clear();
-    draw_sprite(player);
     for (size_t i = 0; i < sizeof(enemys) / sizeof(enemys[0]); i++)
     {
         if (enemys[i].life > 0)
@@ -161,15 +104,9 @@ void draw()
             draw_sprite(enemys[i]);
         }
     }
-    for (size_t i = 0; i < sizeof(bullets) / sizeof(bullets[0]); i++)
-    {
-        if (bullets[i].life > 0)
-        {
-            draw_sprite(bullets[i]);
-        }
-    }
-    draw_score(player.score);
-    draw_life(player.life);
+    draw_score(status.score);
+    draw_life(status.life);
+	draw_value(status.value);
     if (status.over)
     {
         draw_gameover(WIDTH, HEIGHT);
@@ -212,7 +149,7 @@ int main(int argc, char *argv[])
     }
 
     // creates a window
-    window = SDL_CreateWindow("AirWar",
+    window = SDL_CreateWindow("Typing Number",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT,
                               SDL_WINDOW_SHOWN);
@@ -262,13 +199,7 @@ int main(int argc, char *argv[])
         {
             make_enemy();
         }
-
-        if (status.make_bullet == 1)
-        {
-            make_bullet();
-            status.make_bullet = 0;
-        }
-
+		
         update();
 
         SDL_Delay(1000 / 60);
