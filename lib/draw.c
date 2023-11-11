@@ -4,6 +4,7 @@
 
 TTF_Font *font;
 TTF_Font *bigfont;
+TTF_Font *superfont;
 SDL_Renderer *renderer;
 SDL_Surface *surface;
 SDL_Texture *texture;
@@ -11,7 +12,8 @@ SDL_Texture *texture;
 void draw_init(SDL_Window *window)
 {
     font = TTF_OpenFont("./resources/white-rabbit.TTF", 20);
-    bigfont = TTF_OpenFont("./resources/white-rabbit.TTF", 30);
+    bigfont = TTF_OpenFont("./resources/white-rabbit.TTF", 40);
+	superfont = TTF_OpenFont("./resources/white-rabbit.TTF", 60);
     Uint32 render_flags = SDL_RENDERER_ACCELERATED;
     renderer = SDL_CreateRenderer(window, -1, render_flags);
 }
@@ -24,7 +26,7 @@ void draw_clear()
 void draw_paused(int WIDTH, int HEIGHT)
 {
     SDL_Color color = {255, 255, 255};
-    surface = TTF_RenderText_Solid(bigfont,
+    surface = TTF_RenderText_Solid(superfont,
                                    "PAUSED", color);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -38,7 +40,7 @@ void draw_paused(int WIDTH, int HEIGHT)
 void draw_gameover(int WIDTH, int HEIGHT)
 {
     SDL_Color color = {255, 0, 0};
-    surface = TTF_RenderText_Solid(bigfont,
+    surface = TTF_RenderText_Solid(superfont,
                                    "GAME OVER", color);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -109,7 +111,7 @@ void draw_sprite(Sprite sprite)
 {
     SDL_Color color = {255, 255, 255};
     // 🛸
-    surface = TTF_RenderText_Solid(font,
+    surface = TTF_RenderText_Solid(bigfont,
                                    sprite.data, color);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     int texW = 0;

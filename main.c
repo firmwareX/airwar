@@ -7,7 +7,6 @@
 #include "./lib/status.h"
 #include "./lib/sprite.h"
 #include "./lib/process_events.h"
-#include "./lib/update.h"
 #include "./lib/draw.h"
 #include "./lib/collision_detection.h"
 
@@ -29,17 +28,8 @@ void init_enemys()
     // for (size_t i = 0; i < sizeof(enemys) / sizeof(enemys[0]); i++)
     for (size_t i = 0; i < ENEMYSTOTAL; i++)
     {
-        enemys[i] = Sprite_New(0, -20, 20, 20, "A", WIDTH, HEIGHT);
+        enemys[i] = Sprite_New(0, -20, 50, 20, "A", WIDTH, HEIGHT);
         enemys[i].life = 0;
-    }
-}
-
-void init_bullets()
-{
-    for (size_t i = 0; i < BULLETSTOTAL; i++)
-    {
-        bullets[i] = Sprite_New(10, 10, 10, 5, "^", WIDTH, HEIGHT);
-        bullets[i].life = 0;
     }
 }
 
@@ -78,20 +68,27 @@ void make_enemy()
 
 void update()
 {
-
-    for (size_t i = 0; i < ENEMYSTOTAL; i++)
-    {
-        if (enemys[i].life > 0)
-        {
-            update_sprite(&enemys[i], HEIGHT);
-			if(enemys[i].value==status.value){
-				enemys[i].life-=1;
-				status.score+=1;
-				status.value=-1;
+	if(status.life<1){
+		status.over=1;
+	}else{
+		for (size_t i = 0; i < ENEMYSTOTAL; i++)
+		{
+			if (enemys[i].life > 0)
+			{
+				if(enemys[i].value==status.value){
+					enemys[i].life-=1;
+					status.score+=1;
+					status.value=-1;
+				}else{
+					enemys[i].y+=1;
+					if(enemys[i].y>HEIGHT){
+						enemys[i].life-=1;
+						status.life-=1;
+					}
+				}
 			}
-        }
-    }
-	
+		}
+	}
 }
 
 void draw()
