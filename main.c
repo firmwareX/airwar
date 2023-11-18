@@ -3,6 +3,8 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_thread.h>
 #include <time.h>
 #include "./lib/status.h"
 #include "./lib/sprite.h"
@@ -23,6 +25,16 @@ Sprite bullets[BULLETSTOTAL];
 Sprite enemys[ENEMYSTOTAL];
 
 SDL_Window *window;
+Mix_Chunk *gbomb = NULL;
+Mix_Chunk *gfire = NULL;
+Mix_Chunk *gover = NULL;
+Mix_Chunk *glife = NULL;
+SDL_Thread *thread = NULL;
+
+void play_sound(Mix_Chunk *gbomb)
+{
+    Mix_PlayChannel(-1, gbomb, 0);
+}
 
 void init_player()
 {
@@ -53,6 +65,7 @@ void init_bullets()
 
 void init()
 {
+    srand(time(NULL));
     init_player();
     init_bullets();
     init_enemys();
@@ -66,7 +79,6 @@ void make_enemy()
     {
         if (enemys[i].life < 1)
         {
-            srand(time(NULL));
             int x = rand() % (WIDTH - enemys[i].w);
             enemys[i].x = x;
             enemys[i].y = -1 * enemys[i].h;
@@ -89,9 +101,18 @@ void make_bullet()
             bullets[i].life = 1;
             bullets[i].speed = 4;
             bullets[i].toy = -1;
+            play_sound(gfire);
             break;
         }
     }
+}
+
+int play_bomb_sound()
+{
+    Mix_PlayChannel(-1, gbomb, 0);
+    // SDL_Delay( 250 );
+    SDL_WaitThread(thread, NULL);
+    return 0;
 }
 
 void update()
@@ -121,10 +142,15 @@ void update()
             if (collision_detection(enemys[i], player))
             {
                 player.life -= enemys[i].attack;
-                if(player.life < 1){
+                if (player.life < 1)
+                {
+                    play_sound(gover);
                     status.over = 1;
-                }else{
+                }
+                else
+                {
                     enemys[i].life -= 1;
+                    play_sound(glife);
                 }
             }
         }
@@ -140,6 +166,8 @@ void update()
                 {
                     if (collision_detection(enemys[i], bullets[j]))
                     {
+                        play_sound(gbomb);
+                        // thread = SDL_CreateThread(play_bomb_sound, "play", NULL);
                         enemys[i].life -= bullets[j].attack;
                         bullets[j].life -= enemys[i].attack;
                         player.score += enemys[i].value;
@@ -211,6 +239,32 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+
+    gbomb = Mix_LoadWAV("./resources/bomb.wav");
+    if (gbomb == NULL)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    gfire = Mix_LoadWAV("./resources/fire.wav");
+    if (gfire == NULL)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    gover = Mix_LoadWAV("./resources/over.wav");
+    if (gover == NULL)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    glife = Mix_LoadWAV("./resources/life--.wav");
+    if (glife == NULL)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+
     // creates a window
     window = SDL_CreateWindow("AirWar",
                               SDL_WINDOWPOS_CENTERED,
@@ -276,6 +330,11 @@ int main(int argc, char *argv[])
 
     /// Freeing resources
     draw_destroy();
+    Mix_FreeChunk(gbomb);
+    Mix_FreeChunk(gfire);
+    Mix_FreeChunk(gover);
+    Mix_FreeChunk(glife);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    return 0;
 }
